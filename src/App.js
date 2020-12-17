@@ -2,7 +2,11 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-import Crypto from './Crypto';
+// import Crypto from './Crypto';
+import CryptoFunctional from './CryptoFunctional';
+
+
+
 
 function App() {
   return (
@@ -11,7 +15,10 @@ function App() {
         <img src={logo} className="App-logo" alt="logo" />
         <h1>Crypto Rate</h1>
       </header>
-      <Crypto />
+      {/* <Crypto /> */}
+      <CryptoFunctional />
+
+    
     </div>
   );
 }

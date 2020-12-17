@@ -1,35 +1,27 @@
-import React, {Component} from 'react';
-import './Crypto.css';
+import React, { useState, useEffect } from 'react';
+import './CryptoFunctional.css';
 
 import axios from 'axios';
-import CryptoList from './CryptoList';
+import CryptoList from './CryptoList'; 
 
-class Crypto extends Component {
+const CryptoFunctional = (props) => {
 
-    constructor(props) {
-        super(props);
+    const [cryptoList, filteredCryptoList] = useState([]);
 
-        this.state = {
-            cryptoList: [],
-            filteredCryptoList: [],
-        };
-    }
+    useEffect(() => {
+        let timerID = setInterval(() => getCryptoData(), 5000);
 
-    componentDidMount() {
-        this.getCryptoData();
-        this.timerID = setInterval(() => this.getCryptoData(), 5000);
-    }
-
-    componentWillUnmount() {
-        clearInterval(this.timerID);
-    }
+        return(() => {
+            clearInterval(this.timerID);
+        })
+    },[cryptoList, filteredCryptoList]);
 
     getCryptoData = () => {
         axios.get('https://blockchain.info/pl/ticker')
             .then(res => {
                 const tickers = res.data;
 
-                this.setState((state) => {
+                setState((state) => {
                     let newCryptoList = [];
 
                     for (const [ticker, cryptoRate] of Object.entries(tickers)) {
@@ -71,15 +63,15 @@ class Crypto extends Component {
 
                 });
 
-                this.filterCryptoList();
+                filterCryptoList();
 
             });
     }
 
     filterCryptoList = () => {
-        this._inputFilter.value = this._inputFilter.value.trim().toUpperCase();
+        _inputFilter.value = _inputFilter.value.trim().toUpperCase();
 
-        this.setState((state) => {
+        setState((state) => {
             let newFilteredCryptoList = state.cryptoList.filter((cryptoObj) => {
                 return(cryptoObj.currency.includes(this._inputFilter.value))
             });
@@ -91,16 +83,15 @@ class Crypto extends Component {
 
     }
 
-    render() {
-        return(
-            <div className="Crypto">
-                <input ref={element => this._inputFilter = element} onChange={this.filterCryptoList}
-                type="text" placeholder="Filter"/>
-               <CryptoList cryptoList={this.state.filteredCryptoList} />
-            </div>
-        );
-    }
+
+
+    return(
+        <div className="Crypto">
+            <input ref={element => _inputFilter = element} onChange={filterCryptoList}
+            type="text" placeholder="Filter"/>
+           <CryptoList cryptoList={state.filteredCryptoList} />
+        </div>
+    );
 }
 
-export default Crypto;
-
+export default CryptoFunctional;
