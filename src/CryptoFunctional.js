@@ -6,26 +6,28 @@ import CryptoList from './CryptoList';
 
 const CryptoFunctional = (props) => {
 
-    const [cryptoList, filteredCryptoList] = useState([]);
+    const [cryptoList, setCryptoList] = useState([]);
+
+    const [filteredCryptoList, setFilterCryptoList] = useState([]);
 
     useEffect(() => {
         let timerID = setInterval(() => getCryptoData(), 5000);
 
         return(() => {
-            clearInterval(this.timerID);
+            clearInterval(timerID);
         })
-    },[cryptoList, filteredCryptoList]);
+    });
 
-    getCryptoData = () => {
+    const getCryptoData = () => {
         axios.get('https://blockchain.info/pl/ticker')
             .then(res => {
                 const tickers = res.data;
 
-                setState((state) => {
+                
                     let newCryptoList = [];
 
                     for (const [ticker, cryptoRate] of Object.entries(tickers)) {
-                        let lastCryptoObj = state.cryptoList.find((cryptoObj) => {
+                        let lastCryptoObj = cryptoList.find((cryptoObj) => {
                             return(cryptoObj.currency === ticker);
                         })
 
@@ -56,40 +58,43 @@ const CryptoFunctional = (props) => {
 
                        newCryptoList.push(newCryptoObj);
                     }
+                    setCryptoList(newCryptoList);
 
                     return({
                         cryptoList: newCryptoList
                     })
 
-                });
+                
 
                 filterCryptoList();
 
             });
     }
 
-    filterCryptoList = () => {
-        _inputFilter.value = _inputFilter.value.trim().toUpperCase();
+    const filterCryptoList = (event) => {
 
-        setState((state) => {
-            let newFilteredCryptoList = state.cryptoList.filter((cryptoObj) => {
-                return(cryptoObj.currency.includes(this._inputFilter.value))
-            });
 
-            return({
-                filteredCryptoList: newFilteredCryptoList
-            });
+        let inputValue = event.target.value;
+
+        let newFilteredCryptoList = cryptoList.filter((cryptoObj) => {
+            return(cryptoObj.currency.includes(inputValue))
         });
 
+        setFilterCryptoList(newFilteredCryptoList);
+            
+        return({
+            filteredCryptoList: newFilteredCryptoList
+        });
     }
 
 
 
     return(
         <div className="Crypto">
-            <input ref={element => _inputFilter = element} onChange={filterCryptoList}
+            <input onChange={filterCryptoList}
             type="text" placeholder="Filter"/>
-           <CryptoList cryptoList={state.filteredCryptoList} />
+           <CryptoList cryptoList={filteredCryptoList} />
+           
         </div>
     );
 }
